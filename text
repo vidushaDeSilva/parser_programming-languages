@@ -1,0 +1,47 @@
+class lex:
+    def __init__(self, input):
+        self.input = input
+        self.pos = 0
+        self.tokens = []
+        self.keywords = ['if', 'else', 'while', 'for', 'int', 'float', 'char', 'void', 'return']
+        self.symbols = ['+', '-', '*', '/', '(', ')', '{', '}', '[', ']', ';', ',', '<', '>', '=', '!', '&', '|']
+        self.delimiters = [' ', '\n', '\t']
+        self.lex()
+
+    def lex(self):
+        while self.pos < len(self.input):
+            if self.input[self.pos] in self.delimiters:
+                self.pos += 1
+            elif self.input[self.pos].isalpha():
+                token = self.input[self.pos]
+                self.pos += 1
+                while self.pos < len(self.input) and (self.input[self.pos].isalpha() or self.input[self.pos].isdigit()):
+                    token += self.input[self.pos]
+                    self.pos += 1
+                if token in self.keywords:
+                    self.tokens.append(('keyword', token))
+                else:
+                    self.tokens.append(('identifier', token))
+            elif self.input[self.pos].isdigit():
+                token = self.input[self.pos]
+                self.pos += 1
+                while self.pos < len(self.input) and self.input[self.pos].isdigit():
+                    token += self.input[self.pos]
+                    self.pos += 1
+                if self.pos < len(self.input) and self.input[self.pos] == '.':
+                    token += self.input[self.pos]
+                    self.pos += 1
+                    while self.pos < len(self.input) and self.input[self.pos].isdigit():
+                        token += self.input[self.pos]
+                        self.pos += 1
+                    self.tokens.append(('float', token))
+                else:
+                    self.tokens.append(('int', token))
+            elif self.input[self.pos] in self.symbols:
+                self.tokens.append(('symbol', self.input[self.pos]))
+                self.pos += 1
+            else:
+                self.pos += 1
+
+    def __str__(self):
+        return str(self.tokens)
