@@ -8,29 +8,13 @@ class lex:
         self.punctuation = ['(', ')', ';', ',']
         self.tokens = []
 
-
-
-    def advance(self):
-        self.pos += 1
-        self.current_char = self.input[self.pos] if self.pos < len(self.input) else None
             
     def lex(self):
         while self.pos < len(self.input):
             if self.input[self.pos] in self.digits:
                 self.tokenize_INTEGERS()
             elif self.input[self.pos] in self.ops:
-                if self.input[self.pos] == '+':
-                    self.token.append(['PLUS',self.input[self.pos]])
-                elif self.input[self.pos] == '-':
-                    self.token.append(['SUB', self.input[self.pos]])
-                elif self.input[self.pos] == '*':
-                    self.token.append(['MULT', self.input[self.pos]])
-                elif self.input[self.pos] == '/':
-                    self.token.append(['DIV', self.input[self.pos]])
-                elif self.input[self.pos] == '&':
-                    self.token.append(['AND', self.input[self.pos]])
-                elif self.input[self.pos] == '|':
-                    self.token.append(['OR', self.input[self.pos]])
+                self.token.append(['OPERATOR', self.input[self.pos]])
             elif self.input[self.pos] in self.punctuation:
                 if self.input[self.pos] == '(':
                     self.token.append(['LPAREN', self.input[self.pos]])
@@ -42,32 +26,60 @@ class lex:
                     self.token.append(['COMMA', self.input[self.pos]])
             elif self.input[self.pos].isalpha():
                 self.tokenize_ID()
-                
-
+            elif self.input[self.pos] == ' " ':
+                self.tokenize_STRING()
+            elif self.input[self.pos] == ' ':
+                self.tokenize_DELETE_space()
+            elif self.input[self.pos] == '/*':
+                self.tokenize_DELETE_comments()
 
     def tokenize_INTEGERS(self):
         while self.pos < len(self.input):
-            if self.input[self.pos] in self.digits:
                 token = self.input[self.pos]
                 self.pos += 1
                 while self.pos < len(self.input) and self.input[self.pos] in self.digits:
                     token += self.input[self.pos]
                     self.pos += 1
                 self.tokens.append(('INTEGER', token))
-            else:
-                self.pos += 1
+            
 
     def tokenize_ID(self):
         while self.pos < len(self.input):
-            if self.input[self.pos].isalpha():
                 token = self.input[self.pos]
                 self.pos += 1
                 while self.pos < len(self.input) and (self.input[self.pos].isalpha() or self.input[self.pos].isdigit()):
                     token += self.input[self.pos]
                     self.pos += 1
-                self.tokens.append(('ID', token))
-            else:
+                self.tokens.append(('IDENTIFIER', token))
+
+    def tokenize_STRING(self):
+        while self.pos < len(self.input):
+                token = self.input[self.pos]
                 self.pos += 1
+                while self.pos < len(self.input) and self.input[self.pos] != '"':
+                    token += self.input[self.pos]
+                    self.pos += 1
+                token += self.input[self.pos]
+                self.tokens.append(('STRING', token))
+
+    def tokenize_DELETE_space(self):
+        while self.pos < len(self.input):
+                token = self.input[self.pos]
+                self.pos += 1
+                while self.pos < len(self.input) and self.input[self.pos] != ' ':
+                    token += self.input[self.pos]
+                    self.pos += 1
+                self.tokens.append(('DELETE', token))
+
+    def tokenize_DELETE_comments(self):
+        while self.pos < len(self.input):
+                token = self.input[self.pos]
+                self.pos += 1
+                while self.pos < len(self.input) and self.input[self.pos] != '*/':
+                    token += self.input[self.pos]
+                    self.pos += 1
+                token += self.input[self.pos]
+                self.tokens.append(('DELETE', token))
                 
             
         
