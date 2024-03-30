@@ -80,6 +80,3 @@ class lex:
                     self.pos += 1
                 token += self.input[self.pos]
                 self.tokens.append(('DELETE', token))
-                
-            
-        
